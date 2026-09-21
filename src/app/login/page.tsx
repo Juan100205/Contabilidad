@@ -22,7 +22,8 @@ export default function LoginPage() {
       const session = await api.post<LoginResponse>("/api/auth/login", { username, password });
       setSession(session);
       // Recarga completa para que el layout del servidor lea la cookie de sesión/tema.
-      window.location.href = "/dashboard";
+      const isMobile = window.matchMedia("(max-width: 1023px)").matches;
+      window.location.href = isMobile ? "/diario" : "/dashboard";
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "No se pudo conectar con el backend.");
       setLoading(false);

@@ -28,6 +28,10 @@ yarn-error.log*
 # local env files
 .env*.local
 
+# secretos / notas locales
+credenciales.txt
+*.log
+
 # vercel
 .vercel
 
