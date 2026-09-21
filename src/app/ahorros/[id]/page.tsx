@@ -2,7 +2,7 @@
 
 import { ArrowLeft, Plus, ArrowDownCircle, ArrowUpCircle, Lock, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -15,6 +15,7 @@ import { api } from "@/lib/api";
 import { formatMoney, formatDate, todayIso } from "@/lib/format";
 import type {
   BalanceSummary,
+  Currency,
   FuenteDescuentoPago,
   IncomeEntry,
   SavingsGoal,
@@ -38,13 +39,29 @@ const emptyForm = {
 };
 const DEFAULT_PROJECTION_WEEKS = 4;
 
+const EMOJI_OPTIONS = ["💰", "✈️", "🏠", "🚗", "🎓", "🏥", "🎉", "🛡️"];
+const TOTAL_INCOME_VALUE = "__total__";
+
+const emptyGoalForm = {
+  name: "",
+  icon: EMOJI_OPTIONS[0],
+  targetAmount: "",
+  currencyCode: "COP",
+  targetDate: "",
+  usePercentage: false,
+  percentage: "",
+  incomeSourceFilter: TOTAL_INCOME_VALUE,
+};
+
 export default function BolsilloDetailPage() {
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [goal, setGoal] = useState<SavingsGoal | null>(null);
   const [movements, setMovements] = useState<SavingsMovement[]>([]);
+  const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [incomeSources, setIncomeSources] = useState<string[]>([]);
   const [balance, setBalance] = useState<BalanceSummary | null>(null);
   const [isDiarioWallet, setIsDiarioWallet] = useState(false);
@@ -59,6 +76,9 @@ export default function BolsilloDetailPage() {
   const [editingMovementId, setEditingMovementId] = useState<string | null>(null);
   const [locationDraft, setLocationDraft] = useState("");
   const [savingLocation, setSavingLocation] = useState(false);
+  const [goalModalOpen, setGoalModalOpen] = useState(false);
+  const [savingGoal, setSavingGoal] = useState(false);
+  const [goalForm, setGoalForm] = useState(emptyGoalForm);
 
   async function refreshProjection() {
     const weeks = Number(projectionWeeks) || DEFAULT_PROJECTION_WEEKS;
@@ -74,7 +94,7 @@ export default function BolsilloDetailPage() {
     setLoading(true);
     try {
       const nowDate = new Date();
-      const [g, m, dailyBudgetTemplate, income, bal] = await Promise.all([
+      const [g, m, dailyBudgetTemplate, income, bal, currs] = await Promise.all([
         api.get<SavingsGoal>(`/api/savings-goals/${params.id}`),
         api.get<SavingsMovement[]>(`/api/savings-goals/${params.id}/movements?year=${year}&month=${month}`),
         api.get<WeeklyBudgetTemplate | null>("/api/daily-budget/template"),
@@ -84,11 +104,13 @@ export default function BolsilloDetailPage() {
             `/api/balances/summary?year=${nowDate.getFullYear()}&month=${nowDate.getMonth() + 1}&baseCurrency=COP`,
           )
           .catch(() => null),
+        api.get<Currency[]>("/api/currencies").catch(() => [] as Currency[]),
       ]);
       setGoal(g);
       setMovements(m);
       setIncomeSources(Array.from(new Set(income.map((i) => i.source).filter(Boolean))));
       setBalance(bal);
+      setCurrencies(currs);
       setLocationDraft(g.storageLocation ?? "");
 
       const isWallet = dailyBudgetTemplate?.savingsGoalId === params.id;
@@ -222,6 +244,59 @@ export default function BolsilloDetailPage() {
     }
   }
 
+  function openEditGoalModal() {
+    if (!goal) return;
+    setGoalForm({
+      name: goal.name,
+      icon: goal.icon ?? EMOJI_OPTIONS[0],
+      targetAmount: String(goal.targetAmount),
+      currencyCode: goal.currencyCode,
+      targetDate: goal.targetDate ? goal.targetDate.slice(0, 10) : "",
+      usePercentage: goal.percentage !== null,
+      percentage: goal.percentage !== null ? String(goal.percentage) : "",
+      incomeSourceFilter: goal.incomeSourceFilter ?? TOTAL_INCOME_VALUE,
+    });
+    setGoalModalOpen(true);
+  }
+
+  async function handleUpdateGoal(e: FormEvent) {
+    e.preventDefault();
+    setSavingGoal(true);
+    try {
+      await api.put(`/api/savings-goals/${params.id}`, {
+        name: goalForm.name,
+        icon: goalForm.icon,
+        targetAmount: Number(goalForm.targetAmount),
+        currencyCode: goalForm.currencyCode,
+        targetDate: goalForm.targetDate || null,
+        percentage: goalForm.usePercentage ? Number(goalForm.percentage) : null,
+        incomeSourceFilter:
+          goalForm.usePercentage && goalForm.incomeSourceFilter !== TOTAL_INCOME_VALUE
+            ? goalForm.incomeSourceFilter
+            : null,
+      });
+      setGoalModalOpen(false);
+      await load();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "No se pudo actualizar el bolsillo.");
+    } finally {
+      setSavingGoal(false);
+    }
+  }
+
+  async function handleDeleteGoal() {
+    if (!goal) return;
+    if (!confirm(`¿Eliminar el bolsillo "${goal.name}"? Esto también elimina todo su historial de movimientos. No se puede deshacer.`)) {
+      return;
+    }
+    try {
+      await api.delete(`/api/savings-goals/${params.id}`);
+      router.push("/ahorros");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "No se pudo eliminar el bolsillo.");
+    }
+  }
+
   function deductionLabel(m: SavingsMovement): string | null {
     if (m.incomeDeductionSource === "Ninguna") return null;
     const base =
@@ -245,7 +320,7 @@ export default function BolsilloDetailPage() {
 
       <Card>
         <div className="mb-4 flex items-start justify-between gap-2">
-          <div>
+          <div className="min-w-0">
             <h1 className="font-display text-xl font-bold text-ink-primary">
               <span className="mr-2">{goal.icon}</span>
               {goal.name}
@@ -254,7 +329,25 @@ export default function BolsilloDetailPage() {
               <p className="text-sm text-ink-secondary">Meta para: {formatDate(goal.targetDate)}</p>
             )}
           </div>
-          {goal.status === "Cumplida" && <Badge tone="good">Cumplida</Badge>}
+          <div className="flex shrink-0 items-center gap-2">
+            {goal.status === "Cumplida" && <Badge tone="good">Cumplida</Badge>}
+            <button
+              onClick={openEditGoalModal}
+              aria-label="Editar bolsillo"
+              title="Editar bolsillo"
+              className="text-ink-muted hover:text-ink-primary"
+            >
+              <Pencil size={16} />
+            </button>
+            <button
+              onClick={handleDeleteGoal}
+              aria-label="Eliminar bolsillo"
+              title="Eliminar bolsillo"
+              className="text-ink-muted hover:text-critical"
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
         </div>
 
         <ProgressBar value={goal.progressPercentage} colorClassName="bg-brand" />
@@ -590,6 +683,111 @@ export default function BolsilloDetailPage() {
           )}
           <Button type="submit" disabled={saving} className="w-full">
             {saving ? "Guardando..." : editingMovementId ? "Guardar cambios" : "Registrar movimiento"}
+          </Button>
+        </form>
+      </Modal>
+
+      <Modal open={goalModalOpen} onClose={() => setGoalModalOpen(false)} title="Editar bolsillo">
+        <form onSubmit={handleUpdateGoal}>
+          <FieldGroup>
+            <Label>Nombre</Label>
+            <Input
+              required
+              value={goalForm.name}
+              onChange={(e) => setGoalForm({ ...goalForm, name: e.target.value })}
+            />
+          </FieldGroup>
+          <FieldGroup>
+            <Label>Ícono</Label>
+            <div className="flex flex-wrap gap-2">
+              {EMOJI_OPTIONS.map((emoji) => (
+                <button
+                  type="button"
+                  key={emoji}
+                  onClick={() => setGoalForm({ ...goalForm, icon: emoji })}
+                  className={`flex h-9 w-9 items-center justify-center rounded-lg border text-lg ${
+                    goalForm.icon === emoji ? "border-brand bg-brand-soft" : "border-line bg-surface"
+                  }`}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          </FieldGroup>
+          <div className="grid grid-cols-2 gap-3">
+            <FieldGroup>
+              <Label>Meta de ahorro</Label>
+              <Input
+                required
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={goalForm.targetAmount}
+                onChange={(e) => setGoalForm({ ...goalForm, targetAmount: e.target.value })}
+              />
+            </FieldGroup>
+            <FieldGroup>
+              <Label>Moneda</Label>
+              <Select
+                value={goalForm.currencyCode}
+                onChange={(e) => setGoalForm({ ...goalForm, currencyCode: e.target.value })}
+              >
+                {currencies.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.code}
+                  </option>
+                ))}
+              </Select>
+            </FieldGroup>
+          </div>
+          <FieldGroup>
+            <Label>Fecha objetivo (opcional)</Label>
+            <Input
+              type="date"
+              value={goalForm.targetDate}
+              onChange={(e) => setGoalForm({ ...goalForm, targetDate: e.target.value })}
+            />
+          </FieldGroup>
+          <label className="mb-3 flex items-center gap-2 text-sm text-ink-secondary">
+            <input
+              type="checkbox"
+              checked={goalForm.usePercentage}
+              onChange={(e) => setGoalForm({ ...goalForm, usePercentage: e.target.checked })}
+            />
+            Sugerir aporte mensual como % de ingresos
+          </label>
+          {goalForm.usePercentage && (
+            <div className="mb-4 grid grid-cols-2 gap-3 rounded-lg border border-line bg-surface-hover p-3">
+              <FieldGroup>
+                <Label>Porcentaje</Label>
+                <Input
+                  required
+                  type="number"
+                  min="0.01"
+                  max="100"
+                  step="0.01"
+                  value={goalForm.percentage}
+                  onChange={(e) => setGoalForm({ ...goalForm, percentage: e.target.value })}
+                />
+              </FieldGroup>
+              <FieldGroup>
+                <Label>Sobre</Label>
+                <Select
+                  value={goalForm.incomeSourceFilter}
+                  onChange={(e) => setGoalForm({ ...goalForm, incomeSourceFilter: e.target.value })}
+                >
+                  <option value={TOTAL_INCOME_VALUE}>Total de ingresos</option>
+                  {incomeSources.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </Select>
+              </FieldGroup>
+            </div>
+          )}
+          <Button type="submit" disabled={savingGoal} className="w-full">
+            {savingGoal ? "Guardando..." : "Guardar cambios"}
           </Button>
         </form>
       </Modal>
