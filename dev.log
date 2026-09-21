@@ -1,0 +1,291 @@
+
+> frontend@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 7s
+ ○ Compiling /saldos ...
+The user aborted a request.
+
+Retrying 1/3...
+The user aborted a request.
+
+Retrying 1/3...
+ ✓ Compiled /saldos in 13.3s (630 modules)
+ GET /saldos 200 in 13806ms
+ ✓ Compiled in 534ms (294 modules)
+ GET /saldos 200 in 127ms
+ ✓ Compiled /asistente in 420ms (614 modules)
+ GET /asistente 200 in 576ms
+ ✓ Compiled /configuracion in 416ms (628 modules)
+ GET /configuracion 200 in 519ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 6.8s (1639 modules)
+ GET /dashboard 200 in 232ms
+ ✓ Compiled /favicon.ico in 491ms (879 modules)
+ GET /favicon.ico 200 in 648ms
+ ○ Compiling /ingresos ...
+ ✓ Compiled /ingresos in 523ms (1691 modules)
+ ○ Compiling /gastos ...
+ ✓ Compiled /gastos in 726ms (1703 modules)
+ ○ Compiling /deudas ...
+ ✓ Compiled /diario in 2.2s (1688 modules)
+ ○ Compiling /ahorros ...
+ ✓ Compiled /ahorros in 1191ms (1682 modules)
+ ✓ Compiled /saldos in 365ms (360 modules)
+ ○ Compiling /asistente ...
+ ✓ Compiled /asistente in 662ms (363 modules)
+ ✓ Compiled in 880ms (1172 modules)
+ ✓ Compiled in 448ms (1172 modules)
+ ✓ Compiled in 622ms (831 modules)
+ ✓ Compiled in 307ms (831 modules)
+ ✓ Compiled in 368ms (831 modules)
+ ✓ Compiled in 257ms (831 modules)
+ ✓ Compiled in 293ms (831 modules)
+ ✓ Compiled in 301ms (831 modules)
+ ✓ Compiled in 416ms (831 modules)
+ ✓ Compiled in 413ms (831 modules)
+ ✓ Compiled in 401ms (831 modules)
+ ✓ Compiled in 252ms (831 modules)
+ ✓ Compiled in 246ms (831 modules)
+ ✓ Compiled in 263ms (831 modules)
+ ✓ Compiled in 365ms (831 modules)
+ ✓ Compiled in 381ms (831 modules)
+ ✓ Compiled in 233ms (831 modules)
+ ✓ Compiled in 355ms (831 modules)
+ ✓ Compiled in 842ms (1186 modules)
+ ✓ Compiled in 276ms (831 modules)
+ ✓ Compiled in 270ms (831 modules)
+ ✓ Compiled in 335ms (834 modules)
+ ✓ Compiled in 383ms (834 modules)
+ ✓ Compiled in 1274ms (1189 modules)
+ ✓ Compiled in 697ms (1189 modules)
+ ✓ Compiled in 404ms (1189 modules)
+ ✓ Compiled in 469ms (1189 modules)
+ ✓ Compiled in 476ms (1189 modules)
+ ✓ Compiled in 412ms (1191 modules)
+ ✓ Compiled in 1166ms (1191 modules)
+ ✓ Compiled in 2000ms (1189 modules)
+ ✓ Compiled in 427ms (834 modules)
+ ✓ Compiled in 301ms (834 modules)
+ ✓ Compiled in 298ms (834 modules)
+ ✓ Compiled in 262ms (834 modules)
+ ✓ Compiled in 657ms (1190 modules)
+ ✓ Compiled in 554ms (1192 modules)
+ ✓ Compiled in 490ms (1192 modules)
+ ✓ Compiled in 673ms (1192 modules)
+ ✓ Compiled in 361ms (1192 modules)
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 987ms (868 modules)
+ GET /dashboard 200 in 1643ms
+ ✓ Compiled /gastos in 379ms (877 modules)
+ GET /gastos 200 in 531ms
+ GET /dashboard 200 in 232ms
+ GET /gastos 200 in 48ms
+ ✓ Compiled /ingresos in 409ms (872 modules)
+ GET /ingresos 200 in 560ms
+ ✓ Compiled /deudas in 200ms (872 modules)
+ GET /deudas 200 in 298ms
+ ✓ Compiled /diario in 311ms (873 modules)
+ GET /diario 200 in 410ms
+ GET /diario 200 in 42ms
+ GET /diario 200 in 71ms
+ ○ Compiling /calendario ...
+ ✓ Compiled /calendario in 1279ms (1698 modules)
+ GET /calendario 200 in 1435ms
+ ✓ Compiled /saldos in 333ms (878 modules)
+ GET /saldos 200 in 528ms
+ ✓ Compiled /_not-found in 495ms (1698 modules)
+ GET /escuela 404 in 603ms
+ ✓ Compiled / in 431ms (1707 modules)
+ GET / 307 in 650ms
+ GET /dashboard 200 in 271ms
+ ✓ Compiled /gastos in 375ms (872 modules)
+ ✓ Compiled /deudas in 386ms (369 modules)
+ ○ Compiling /deudas/[id] ...
+ ✓ Compiled /deudas/[id] in 1179ms (1214 modules)
+ ✓ Compiled /ahorros in 214ms (366 modules)
+ ○ Compiling /ahorros/[id] ...
+ ✓ Compiled /ahorros/[id] in 810ms (1218 modules)
+ ✓ Compiled /asistente in 163ms (366 modules)
+ ✓ Compiled /configuracion in 175ms (367 modules)
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 1158ms (877 modules)
+ ✓ Compiled /deudas in 231ms (881 modules)
+ ○ Compiling /calendario ...
+ ✓ Compiled /calendario in 576ms (890 modules)
+ ✓ Compiled /diario in 342ms (896 modules)
+ ✓ Compiled /gastos in 396ms (373 modules)
+ ✓ Compiled /ingresos in 492ms (369 modules)
+ GET /saldos 200 in 227ms
+ ✓ Compiled /favicon.ico in 450ms (394 modules)
+ GET /favicon.ico 200 in 545ms
+ ✓ Compiled /dashboard in 350ms (871 modules)
+ ○ Compiling /calendario ...
+ ✓ Compiled /calendario in 1008ms (872 modules)
+ ○ Compiling /deudas ...
+ ✓ Compiled /deudas in 548ms (878 modules)
+ ○ Compiling /deudas/[id] ...
+ ✓ Compiled /deudas/[id] in 937ms (884 modules)
+ ✓ Compiled /ahorros in 390ms (876 modules)
+ ○ Compiling /asistente ...
+ ✓ Compiled /asistente in 1071ms (883 modules)
+ ✓ Compiled in 1819ms (1214 modules)
+ ✓ Compiled in 658ms (1214 modules)
+ ✓ Compiled in 744ms (1214 modules)
+ ✓ Compiled in 691ms (1214 modules)
+ ✓ Compiled in 800ms (1214 modules)
+ ✓ Compiled in 1229ms (1214 modules)
+ ✓ Compiled in 675ms (1214 modules)
+ ✓ Compiled in 664ms (1214 modules)
+ ✓ Compiled in 1318ms (1216 modules)
+ ✓ Compiled in 753ms (1216 modules)
+ ✓ Compiled in 825ms (1216 modules)
+ ✓ Compiled in 495ms (1216 modules)
+ ✓ Compiled in 460ms (1216 modules)
+ ✓ Compiled in 953ms (1217 modules)
+ ✓ Compiled in 896ms (1217 modules)
+ GET /diario 200 in 176ms
+ GET /calendario 200 in 81ms
+ ○ Compiling /deudas ...
+ ✓ Compiled /deudas in 590ms (371 modules)
+ GET /deudas 200 in 786ms
+ GET /deudas/bf9673d6-e9b3-44c9-9afb-ecc9e8001b70 200 in 106ms
+ GET /deudas/bf9673d6-e9b3-44c9-9afb-ecc9e8001b70 200 in 101ms
+ GET /deudas/bf9673d6-e9b3-44c9-9afb-ecc9e8001b70 200 in 137ms
+ ✓ Compiled in 994ms (1202 modules)
+ ✓ Compiled in 586ms (851 modules)
+ ✓ Compiled in 528ms (1188 modules)
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1643ms (1205 modules)
+ GET /asistente 200 in 183ms
+ GET /deudas/bf9673d6-e9b3-44c9-9afb-ecc9e8001b70 200 in 345ms
+ ✓ Compiled in 1080ms (1207 modules)
+ ✓ Compiled in 1355ms (1209 modules)
+ ○ Compiling /deseos ...
+ ✓ Compiled /deseos in 956ms (1215 modules)
+ GET /deseos 200 in 1287ms
+ GET /asistente 200 in 70ms
+ GET /asistente 200 in 72ms
+ GET /asistente 200 in 73ms
+ ✓ Compiled in 982ms (1208 modules)
+ ✓ Compiled in 485ms (856 modules)
+ ✓ Compiled in 681ms (1216 modules)
+ GET /asistente 200 in 135ms
+ GET /asistente 200 in 83ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 726ms (388 modules)
+ GET /favicon.ico 200 in 1002ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 2.6s (881 modules)
+ ○ Compiling /ingresos ...
+ ✓ Compiled /ingresos in 845ms (886 modules)
+ ○ Compiling /gastos ...
+ ✓ Compiled /gastos in 761ms (878 modules)
+ ○ Compiling /diario ...
+ ✓ Compiled /diario in 875ms (885 modules)
+ ✓ Compiled /calendario in 323ms (881 modules)
+ ✓ Compiled /deudas in 310ms (887 modules)
+ ○ Compiling /deudas/[id] ...
+ ✓ Compiled /deudas/[id] in 691ms (893 modules)
+ ✓ Compiled in 1714ms (1217 modules)
+ ✓ Compiled in 1469ms (1217 modules)
+ ✓ Compiled in 633ms (1217 modules)
+ ✓ Compiled in 1245ms (1217 modules)
+ ✓ Compiled in 344ms (860 modules)
+ ✓ Compiled in 574ms (860 modules)
+ ✓ Compiled in 462ms (860 modules)
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 1997ms (882 modules)
+ ✓ Compiled in 424ms (860 modules)
+ ✓ Compiled in 581ms (860 modules)
+ ✓ Compiled in 356ms (860 modules)
+ ✓ Compiled in 333ms (860 modules)
+ ✓ Compiled in 290ms (860 modules)
+ GET /dashboard 200 in 166ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 857ms (907 modules)
+ GET /favicon.ico 200 in 1006ms
+ GET /dashboard 200 in 207ms
+ GET /favicon.ico 200 in 46ms
+ GET /deudas/bf9673d6-e9b3-44c9-9afb-ecc9e8001b70 200 in 304ms
+ ○ Compiling /ahorros ...
+ ✓ Compiled /ahorros in 792ms (879 modules)
+ GET /ahorros 200 in 1042ms
+ ○ Compiling /ahorros/[id] ...
+ ✓ Compiled /ahorros/[id] in 921ms (878 modules)
+ GET /ahorros/b53eaf3d-70c7-46be-93a2-d107a5cd43ab 200 in 1169ms
+ GET /dashboard 200 in 513ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 1112ms (906 modules)
+ GET /favicon.ico 200 in 1305ms
+ ○ Compiling /diario ...
+ ✓ Compiled /diario in 746ms (915 modules)
+ ✓ Compiled in 1292ms (1738 modules)
+ ✓ Compiled in 738ms (1738 modules)
+ ✓ Compiled in 700ms (1738 modules)
+ GET /diario 200 in 242ms
+ ✓ Compiled in 2.3s (1738 modules)
+ ✓ Compiled in 929ms (1738 modules)
+ ✓ Compiled in 2.2s (1738 modules)
+ GET /diario 200 in 194ms
+ ○ Compiling /saldos ...
+ ✓ Compiled /saldos in 800ms (883 modules)
+ GET /saldos 200 in 231ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 596ms (915 modules)
+ GET /favicon.ico 200 in 726ms
+ ○ Compiling /ingresos ...
+ ✓ Compiled /ingresos in 605ms (920 modules)
+ ○ Compiling /gastos ...
+ ✓ Compiled /gastos in 845ms (926 modules)
+ ○ Compiling /deseos ...
+ ✓ Compiled /deseos in 668ms (365 modules)
+ ✓ Compiled /saldos in 167ms (385 modules)
+ ○ Compiling /configuracion ...
+ ✓ Compiled /configuracion in 730ms (390 modules)
+ ✓ Compiled /dashboard in 265ms (899 modules)
+ ✓ Compiled in 655ms (860 modules)
+ ✓ Compiled in 924ms (860 modules)
+ ✓ Compiled in 487ms (860 modules)
+ ✓ Compiled in 469ms (860 modules)
+ ✓ Compiled in 616ms (860 modules)
+ ✓ Compiled in 364ms (860 modules)
+ ✓ Compiled in 408ms (860 modules)
+ ✓ Compiled in 822ms (860 modules)
+ ✓ Compiled in 446ms (860 modules)
+ ✓ Compiled in 352ms (860 modules)
+ ✓ Compiled in 1006ms (1732 modules)
+ ✓ Compiled in 507ms (860 modules)
+ ✓ Compiled in 387ms (860 modules)
+ ✓ Compiled in 334ms (860 modules)
+ ✓ Compiled in 308ms (860 modules)
+ ○ Compiling /calendario ...
+ ✓ Compiled /calendario in 834ms (879 modules)
+ GET /calendario 200 in 233ms
+ ✓ Compiled /ahorros/[id] in 512ms (885 modules)
+ GET /ahorros/7c61acd0-5223-40ec-b783-d9c07acd4539 200 in 795ms
+ ✓ Compiled in 707ms (860 modules)
+ ✓ Compiled in 376ms (860 modules)
+ ✓ Compiled in 565ms (860 modules)
+ ✓ Compiled in 1737ms (1740 modules)
+ ✓ Compiled in 1469ms (1740 modules)
+ ✓ Compiled in 1594ms (1740 modules)
+ ✓ Compiled in 2.5s (1740 modules)
+ ○ Compiling /saldos ...
+ ✓ Compiled /saldos in 1957ms (1732 modules)
+ GET /saldos 200 in 3885ms
+ GET /ahorros/b53eaf3d-70c7-46be-93a2-d107a5cd43ab 200 in 195ms
+ ✓ Compiled /ahorros in 438ms (383 modules)
+ ✓ Compiled /deudas in 218ms (387 modules)
+ ✓ Compiled /gastos in 299ms (394 modules)
+ ✓ Compiled /ingresos in 256ms (399 modules)
+ GET /saldos 200 in 175ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 534ms (431 modules)
+ GET /favicon.ico 200 in 651ms
+ GET /asistente 200 in 507ms
