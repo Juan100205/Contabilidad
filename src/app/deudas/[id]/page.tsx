@@ -2,7 +2,7 @@
 
 import { ArrowLeft, Plus, Pencil, Trash2, Check, Undo2 } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -14,7 +14,16 @@ import { MonthNav } from "@/components/ui/MonthNav";
 import { api } from "@/lib/api";
 import { formatMoney, formatDate, todayIso } from "@/lib/format";
 import { ESTADO_DEUDA_LABELS, ESTADO_GASTO_LABELS, TIPO_INTERES_LABELS } from "@/lib/labels";
-import type { BalanceSummary, Debt, DebtPayment, EstadoGasto, FuenteDescuentoPago, IncomeEntry } from "@/lib/types";
+import type {
+  BalanceSummary,
+  Currency,
+  Debt,
+  DebtPayment,
+  EstadoGasto,
+  FuenteDescuentoPago,
+  IncomeEntry,
+  TipoInteres,
+} from "@/lib/types";
 
 const emptyForm = {
   amount: "",
@@ -26,13 +35,27 @@ const emptyForm = {
   storageLocation: "",
 };
 
+const emptyDebtForm = {
+  name: "",
+  creditor: "",
+  principalAmount: "",
+  currencyCode: "COP",
+  annualInterestRate: "",
+  interestType: "CompuestoMensual" as TipoInteres,
+  minimumMonthlyPayment: "",
+  startDate: todayIso(),
+  dueDate: "",
+};
+
 export default function DeudaDetailPage() {
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [debt, setDebt] = useState<Debt | null>(null);
   const [payments, setPayments] = useState<DebtPayment[]>([]);
+  const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [incomeSources, setIncomeSources] = useState<string[]>([]);
   const [storageLocations, setStorageLocations] = useState<string[]>([]);
   const [balance, setBalance] = useState<BalanceSummary | null>(null);
@@ -41,12 +64,15 @@ export default function DeudaDetailPage() {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [editingPaymentId, setEditingPaymentId] = useState<string | null>(null);
+  const [debtModalOpen, setDebtModalOpen] = useState(false);
+  const [savingDebt, setSavingDebt] = useState(false);
+  const [debtForm, setDebtForm] = useState(emptyDebtForm);
 
   async function load() {
     setLoading(true);
     try {
       const nowDate = new Date();
-      const [d, p, income, bal] = await Promise.all([
+      const [d, p, income, bal, currs] = await Promise.all([
         api.get<Debt>(`/api/debts/${params.id}`),
         api.get<DebtPayment[]>(`/api/debts/${params.id}/payments?year=${year}&month=${month}`),
         api.get<IncomeEntry[]>("/api/income"),
@@ -55,6 +81,7 @@ export default function DeudaDetailPage() {
             `/api/balances/summary?year=${nowDate.getFullYear()}&month=${nowDate.getMonth() + 1}&baseCurrency=COP`,
           )
           .catch(() => null),
+        api.get<Currency[]>("/api/currencies").catch(() => [] as Currency[]),
       ]);
       setDebt(d);
       setPayments(p);
@@ -67,8 +94,62 @@ export default function DeudaDetailPage() {
         ),
       );
       setBalance(bal);
+      setCurrencies(currs);
     } finally {
       setLoading(false);
+    }
+  }
+
+  function openEditDebtModal() {
+    if (!debt) return;
+    setDebtForm({
+      name: debt.name,
+      creditor: debt.creditor,
+      principalAmount: String(debt.principalAmount),
+      currencyCode: debt.currencyCode,
+      annualInterestRate: String(debt.annualInterestRate),
+      interestType: debt.interestType,
+      minimumMonthlyPayment: String(debt.minimumMonthlyPayment),
+      startDate: debt.startDate.slice(0, 10),
+      dueDate: debt.dueDate ? debt.dueDate.slice(0, 10) : "",
+    });
+    setDebtModalOpen(true);
+  }
+
+  async function handleUpdateDebt(e: FormEvent) {
+    e.preventDefault();
+    setSavingDebt(true);
+    try {
+      await api.put(`/api/debts/${params.id}`, {
+        name: debtForm.name,
+        creditor: debtForm.creditor,
+        principalAmount: Number(debtForm.principalAmount),
+        currencyCode: debtForm.currencyCode,
+        annualInterestRate: Number(debtForm.annualInterestRate),
+        interestType: debtForm.interestType,
+        minimumMonthlyPayment: Number(debtForm.minimumMonthlyPayment || 0),
+        startDate: debtForm.startDate,
+        dueDate: debtForm.dueDate || null,
+      });
+      setDebtModalOpen(false);
+      await load();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "No se pudo actualizar la deuda.");
+    } finally {
+      setSavingDebt(false);
+    }
+  }
+
+  async function handleDeleteDebt() {
+    if (!debt) return;
+    if (!confirm(`¿Eliminar la deuda "${debt.name}"? Esto también elimina todo su historial de pagos. No se puede deshacer.`)) {
+      return;
+    }
+    try {
+      await api.delete(`/api/debts/${params.id}`);
+      router.push("/deudas");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "No se pudo eliminar la deuda.");
     }
   }
 
@@ -188,13 +269,31 @@ export default function DeudaDetailPage() {
 
       <Card>
         <div className="mb-4 flex items-start justify-between gap-2">
-          <div>
+          <div className="min-w-0">
             <h1 className="font-display text-xl font-bold text-ink-primary">{debt.name}</h1>
             <p className="text-sm text-ink-secondary">{debt.creditor}</p>
           </div>
-          <Badge tone={debt.status === "EnMora" ? "critical" : debt.status === "Pagada" ? "good" : "neutral"}>
-            {ESTADO_DEUDA_LABELS[debt.status]}
-          </Badge>
+          <div className="flex shrink-0 items-center gap-2">
+            <Badge tone={debt.status === "EnMora" ? "critical" : debt.status === "Pagada" ? "good" : "neutral"}>
+              {ESTADO_DEUDA_LABELS[debt.status]}
+            </Badge>
+            <button
+              onClick={openEditDebtModal}
+              aria-label="Editar deuda"
+              title="Editar deuda"
+              className="text-ink-muted hover:text-ink-primary"
+            >
+              <Pencil size={16} />
+            </button>
+            <button
+              onClick={handleDeleteDebt}
+              aria-label="Eliminar deuda"
+              title="Eliminar deuda"
+              className="text-ink-muted hover:text-critical"
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
         </div>
 
         <ProgressBar value={debt.progressPercentage} colorClassName="bg-critical" />
@@ -399,6 +498,110 @@ export default function DeudaDetailPage() {
           </p>
           <Button type="submit" disabled={saving} className="w-full">
             {saving ? "Guardando..." : editingPaymentId ? "Guardar cambios" : "Registrar pago"}
+          </Button>
+        </form>
+      </Modal>
+
+      <Modal open={debtModalOpen} onClose={() => setDebtModalOpen(false)} title="Editar deuda">
+        <form onSubmit={handleUpdateDebt}>
+          <FieldGroup>
+            <Label>Nombre</Label>
+            <Input
+              required
+              value={debtForm.name}
+              onChange={(e) => setDebtForm({ ...debtForm, name: e.target.value })}
+            />
+          </FieldGroup>
+          <FieldGroup>
+            <Label>Acreedor</Label>
+            <Input
+              value={debtForm.creditor}
+              onChange={(e) => setDebtForm({ ...debtForm, creditor: e.target.value })}
+            />
+          </FieldGroup>
+          <div className="grid grid-cols-2 gap-3">
+            <FieldGroup>
+              <Label>Monto de la deuda</Label>
+              <Input
+                required
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={debtForm.principalAmount}
+                onChange={(e) => setDebtForm({ ...debtForm, principalAmount: e.target.value })}
+              />
+            </FieldGroup>
+            <FieldGroup>
+              <Label>Moneda</Label>
+              <Select
+                value={debtForm.currencyCode}
+                onChange={(e) => setDebtForm({ ...debtForm, currencyCode: e.target.value })}
+              >
+                {currencies.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.code}
+                  </option>
+                ))}
+              </Select>
+            </FieldGroup>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <FieldGroup>
+              <Label>Tasa de interés anual (%)</Label>
+              <Input
+                required
+                type="number"
+                min="0"
+                step="0.01"
+                value={debtForm.annualInterestRate}
+                onChange={(e) => setDebtForm({ ...debtForm, annualInterestRate: e.target.value })}
+              />
+            </FieldGroup>
+            <FieldGroup>
+              <Label>Tipo de interés</Label>
+              <Select
+                value={debtForm.interestType}
+                onChange={(e) => setDebtForm({ ...debtForm, interestType: e.target.value as TipoInteres })}
+              >
+                {Object.entries(TIPO_INTERES_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </Select>
+            </FieldGroup>
+          </div>
+          <FieldGroup>
+            <Label>Pago mínimo mensual</Label>
+            <Input
+              type="number"
+              min="0"
+              step="0.01"
+              value={debtForm.minimumMonthlyPayment}
+              onChange={(e) => setDebtForm({ ...debtForm, minimumMonthlyPayment: e.target.value })}
+            />
+          </FieldGroup>
+          <div className="grid grid-cols-2 gap-3">
+            <FieldGroup>
+              <Label>Fecha de inicio</Label>
+              <Input
+                required
+                type="date"
+                value={debtForm.startDate}
+                onChange={(e) => setDebtForm({ ...debtForm, startDate: e.target.value })}
+              />
+            </FieldGroup>
+            <FieldGroup>
+              <Label>Fecha límite (opcional)</Label>
+              <Input
+                type="date"
+                value={debtForm.dueDate}
+                onChange={(e) => setDebtForm({ ...debtForm, dueDate: e.target.value })}
+              />
+            </FieldGroup>
+          </div>
+          <Button type="submit" disabled={savingDebt} className="w-full">
+            {savingDebt ? "Guardando..." : "Guardar cambios"}
           </Button>
         </form>
       </Modal>
